@@ -27,28 +27,32 @@ CSS is parsed as:
   "url": "/css/styles.css",
   "type": "text/css",
   "size": 238,
-  "selectors": [
+  "rules": [
     {
-      "token": "html",
-      "type: "element"
-    },
-    {
-      "token": "body",
-      "type: "element"
-    },
-    {
-      "token": "main"
-      "type: "element"
-    }
-  ],
-  "declarations: [
-    {
-      "property": "margin",
-      "value": 0
-    },
-    {
-      "property": "min-height",
-      "value": "100%"
+      "selectors": [
+        {
+          "token": "html",
+          "type: "element"
+        },
+        {
+          "token": "body",
+          "type: "element"
+        },
+        {
+          "token": "main"
+          "type: "element"
+        }
+      ],
+      "declarations: [
+        {
+          "property": "margin",
+          "value": 0
+        },
+        {
+          "property": "min-height",
+          "value": "100%"
+        }
+      ]
     }
   ]
 }
@@ -90,12 +94,92 @@ HTML is parsed as:
 
 Matches:
 
+```
 `<html>` found on line 2, column 1
 `<body>` found on line 3, column 3
 `<main>` not found
+```
 
 Output:
 
 ```
-CSS: Unused selector. `main` not found in 1 HTML file.
+WARN: CSS: Unused selector. `main` not found in 1 HTML file.
+```
+
+The author cleans up the bad selector, and then adds some more CSS, as such:
+
+
+```
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-size: 100%;
+  margin: 1rem;
+}
+```
+
+The CSS is parsed as:
+
+```
+{
+  "url": "/css/styles.css",
+  "type": "text/css",
+  "size": 238,
+  "rules": [
+    {
+      "selectors": [
+        {
+          "token": "html",
+          "type: "element"
+        },
+        {
+          "token": "body",
+          "type: "element"
+        },
+        {
+          "token": "main"
+          "type: "element"
+        }
+      ],
+      "declarations: [
+        {
+          "property": "margin",
+          "value": 0
+        },
+        {
+          "property": "min-height",
+          "value": "100%"
+        }
+      ]
+    },
+    {
+      "selectors": [
+        {
+          "token": "body",
+          "type: "element"
+        }
+      ],
+      "declarations: [
+        {
+          "property": "margin",
+          "value": "1rem"
+        },
+        {
+          "property": "font-size",
+          "value": "100%"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Outputs as: 
+
+```
+WARN: CSS: property redeclared. `body` has `margin` set 2 or more times.
 ```
